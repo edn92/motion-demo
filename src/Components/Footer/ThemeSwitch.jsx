@@ -7,9 +7,9 @@ function ThemeSwitch(){
     const [isDark, setIsDark] = useState(true);
 
     function handleSwitch(){
-        setIsDark(!isDark);
-
-        if (isDark) {
+        const dark = !isDark;
+        setIsDark(prevIsDark => dark);
+        if (dark) {
             document.querySelector('body').setAttribute('data-theme', 'dark');
         } else {
             document.querySelector('body').setAttribute('data-theme', 'light');
@@ -21,7 +21,7 @@ function ThemeSwitch(){
             <button
                 className="toggle-container"
                 style={{
-                    justifyContent: "flex-" + (isDark ? "start" : "end"),
+                    justifyContent: "flex-" + (isDark ? "end" : "start"),
                 }}
                 onClick={handleSwitch}
             >
@@ -35,8 +35,8 @@ function ThemeSwitch(){
                         bounce: 0.2,
                     }}>
                     { isDark ? 
-                        <LightModeIcon className='svg-icon' style={iconStyle}/> : 
-                        <DarkModeIcon className='svg-icon' style={iconStyle}/>
+                        <DarkModeIcon className='svg-icon' style={iconStyle}/> : 
+                        <LightModeIcon className='svg-icon' style={iconStyle}/> 
                     }
                 </motion.div>
             </button>

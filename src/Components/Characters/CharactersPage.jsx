@@ -9,20 +9,25 @@ import splashArt from '../../assets/splash_art.png';
 import splashArt1 from '../../assets/splash_art1.png';
 import splashArt2 from '../../assets/splash_art2.png';
 
+import cIcon from '../../assets/character_icon.png';
+import cIcon1 from '../../assets/character_icon1.png';
+import cIcon2 from '../../assets/character_icon2.png';
+
 function CharactersPage(){    
+    const testLongString = 'Loremaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.'
+    const testLongString1 = 'Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.'
+    
     const charData = [
-        { id: 0, name: 'a', info: 'aaaaaa', imgSource: splashArt, alt: 'aalt',},
-        { id: 1, name: 'b', info: 'bbbbbc', imgSource: splashArt1, alt: 'balt'},
-        { id: 2, name: 'c', info: 'cccccc', imgSource: splashArt2, alt: 'calt'}
+        { id: 0, name: 'abc', info: testLongString, imgSource: splashArt, iconSource: cIcon, alt: 'aalt',},
+        { id: 1, name: 'bcd', info: testLongString1, imgSource: splashArt1, iconSource: cIcon1, alt: 'balt'},
+        { id: 2, name: 'cde', info: 'cccccc', imgSource: splashArt2, iconSource: cIcon2, alt: 'calt'}
     ];
 
     const [selectedCharacter, setSelectedCharacter] = useState(0);
-    const [lastSelected, setLastSelected] = useState(1);
 
     function changeCharacter(selectedID){ 
         if (selectedID !== selectedCharacter) {
             setSelectedCharacter(prevSelectedCharacter => selectedID);
-            setLastSelected(prevLastSelected => selectedID);
         }   
     }
 
@@ -32,7 +37,7 @@ function CharactersPage(){
                 <motion.div className='character-menu-container'>
                     {
                         charData.map((item) => 
-                            <CharacterMenuItem activeID={selectedCharacter} id={item.id} name={item.name} onClick={() => changeCharacter(item.id)}/>
+                            <CharacterMenuItem activeID={selectedCharacter} id={item.id} src={item.iconSource} name={item.name} onClick={() => changeCharacter(item.id)}/>
                         )
                     }
                 </motion.div>

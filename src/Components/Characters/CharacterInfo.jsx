@@ -1,8 +1,12 @@
 function CharacterInfo(props){
     return (
         <div className="character-info-container">
-            <h1>Name: {props.name}</h1>
-            <div>{props.info}</div>
+            <div className='character-info'>
+                <div className="character-name-div">Name: {props.name}</div>
+                <div className="scrollable-div">
+                    {props.info}
+                </div>
+            </div>
         </div>
     );
 }
