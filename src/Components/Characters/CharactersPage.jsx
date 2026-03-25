@@ -20,7 +20,7 @@ function CharactersPage(){
     const charData = [
         { id: 0, name: 'abc', info: testLongString, imgSource: splashArt, iconSource: cIcon, alt: 'aalt',},
         { id: 1, name: 'bcd', info: testLongString1, imgSource: splashArt1, iconSource: cIcon1, alt: 'balt'},
-        { id: 2, name: 'cde', info: 'cccccc', imgSource: splashArt2, iconSource: cIcon2, alt: 'calt'}
+        { id: 2, name: 'cde', info: testLongString1, imgSource: splashArt2, iconSource: cIcon2, alt: 'calt'}
     ];
 
     const [selectedCharacter, setSelectedCharacter] = useState(0);
