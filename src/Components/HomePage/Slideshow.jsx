@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useEffect, useLayoutEffect, useState } from 'react';
 import { motion, useAnimation } from 'motion/react';
 import SlideImage1 from '../../assets/splash_art.png';
 import SlideImage2 from '../../assets/splash_art1.png';
@@ -32,9 +32,16 @@ function Slideshow(){
     const [currentSlide, setCurrentSlide] = useState(slidesArray[0]);
     const [nextSlide, setNextSlide] = useState(slidesArray[1]);
     const [previousSlide, setPreviousSlide] = useState(slidesArray[slidesArray.length -1]);
-    const [changeDirection, setChangeDirection] = useState('Right');
+
+    //const direction = ['Right', 'Left']
+    const [changeDirection, setChangeDirection] = useState(true); //true right, left false
+
+    const pSRef = useRef(null); //slide images are the same base width so only need one
+    const [slideImageWidth, setSlideImageWidth] = useState(0); //used for animations
 
     const mainSlideAnims = useAnimation();
+    const previousSlideAnims = useAnimation();
+    const nextSlideAnims = useAnimation();
 
     /*useEffect(() => {
         const interval = setInterval(() => {
@@ -44,6 +51,33 @@ function Slideshow(){
         return () => clearInterval(interval); 
     }, [currentSlide]); */
 
+    useEffect(() => { //get initial animation calc
+        if (pSRef.current){
+            setSlideImageWidth(prevSlideImageWidth => pSRef.current.getBoundingClientRect().width);
+        }
+        /*if (mainRef.current){
+            const test1 = mainRef.current.getBoundingClientRect()
+            console.log('main ' + test1.x);
+            console.log('previous width ' + test1.width);
+        }
+        if (nextRef.current){
+            const test2 = nextRef.current.getBoundingClientRect()
+            console.log('next ' + test2.x);
+            console.log('previous width ' + test2.width);
+        }*/
+    }, []);
+
+    
+    useEffect(() => { //handle animation calc updates when resizing
+        function UpdateImageWidth(){
+            setSlideImageWidth(prevSlideImageWidth => pSRef.current.getBoundingClientRect().width);
+        }
+
+        //const debounceResize = debounce(UpdateImageWidth, 100);
+
+        window.addEventListener('resize', UpdateImageWidth)
+        return () => window.removeEventListener('resize', UpdateImageWidth);
+    }, []);
 
     function NextSlide(){
         let next = currentSlide.id + 1;
@@ -67,9 +101,7 @@ function Slideshow(){
         }*/
         setCurrentSlide(prevCurrentSlide => slidesArray[next]);
 
-        setChangeDirection(prevChangeDirection => 'Right');
-
-        HandleAnimations();
+        HandleAnimations(true);
     }
 
     function PreviousSlide(){
@@ -93,18 +125,17 @@ function Slideshow(){
             previous = slides.length; //set to last slade
         }*/
         setCurrentSlide(prevCurrentSlide => slidesArray[previous]);
-        setChangeDirection(prevChangeDirection => 'Left');
 
-        HandleAnimations();
+        HandleAnimations(false);
     }
     
     function ChangeSlide(id){
-        if (id >= currentSlide){
-            setChangeDirection(prevChangeDirection => 'Right');
+        //let d = direction[0]; //set to right initially, if its less, then going left
+        if (id < currentSlide.id){
+            setChangeDirection(prevChangeDirection => true);
         } else {
-            setChangeDirection(prevChangeDirection => 'Left');
+            setChangeDirection(prevChangeDirection => false);
         }
-
         setCurrentSlide(prevCurrentSlide => slidesArray[id]);
 
         let next = id + 1;
@@ -121,14 +152,9 @@ function Slideshow(){
         setPreviousSlide(prevPreviousSlide => slidesArray[previous]);
         setCurrentSlide(prevCurrentSlide => slidesArray[id]);
 
+
         HandleAnimations();
     }
-
-    /*old
-    function ChangeSlide(id){
-        setPreviousSlide(prevPreviousSlide => slidesArray[currentSlide.id]);
-        setCurrentSlide(prevSlide => slidesArray[id]);
-    }*/
 
     function OnDragEnd(event, info){
         if (info.delta.x > 0){
@@ -139,65 +165,50 @@ function Slideshow(){
         }
     }
 
-    function HandleAnimations(){
-        mainSlideAnims.set({scale: 1});
+    function HandleAnimations(direction){
+        //console.log(slideImageWidth);
+
+        //let xMoveValue = 200;
+        let mainScale = 1.1;
+        let xTranslateValue = (slideImageWidth/2); //current translate is 50% for non main slides
+        let transDuration = 5;
+
+        mainSlideAnims.set({ 
+            scale: 1, 
+            x: direction ? xTranslateValue : -xTranslateValue,
+            zIndex: 0 });
         mainSlideAnims.start({
-            scale: 1.1
+            scale: mainScale,
+            x: 0,
+            zIndex: 5,
+            transition: {duration: transDuration}
+        });
+
+        nextSlideAnims.set({
+            scale: direction ? 1 : mainScale,
+            x: direction ? xTranslateValue : -xTranslateValue,
+            zIndex: direction ? 4 : 0
+        })
+        nextSlideAnims.start({
+            scale: 1,
+            x: 0,
+            zIndex: 0,
+            transition: {duration: transDuration}
+        })
+
+        previousSlideAnims.set({ 
+            scale: direction ? mainScale : 1,
+            x: direction ? xTranslateValue : -xTranslateValue,
+            zIndex: direction ? 0 : 4
+        })
+        previousSlideAnims.start({
+            scale: 1,
+            x: 0,
+            zIndex: 0,
+            transition: {duration: transDuration}
         })
     }
 
-/**
- <ul>
-                    {
-                        slidesArray.map((slide) => 
-                            <li>
-                                <motion.img
-                                    className={slide.id === currentSlide.id ? 'slide-image' : 'hidden-slide-image'} 
-                                    key={slide.imgSource} 
-                                    src={slide.imgSource} 
-                                    alt={slide.alt} />
-                            </li>
-                        )
-                    }
-                </ul>
- */
-
-/*
-
-                <motion.img 
-                    key={currentSlide.imgSource} 
-                    src={currentSlide.imgSource} 
-                    alt={currentSlide.alt}
-                    initial={ direction ? animateLeft : animateRight }
-                    animate={{
-                        x: 0,
-                        opacity: 1
-                    }}
-                    transition={{duration: 0.2}}/>
-*/
-
-/*
-<motion.ul 
-                    drag='x'
-                    whileDrag={{cursor:'grabbing'}}
-                    dragConstraints = {{ left: -1, right: 1}}
-                    dragElastic={0.3}
-                    onDragEnd={OnDragEnd}>
-                    {
-                        slidesArray.map((slide) =>
-                            <li 
-                                key={slide.id}
-                                id={'Slide' + slide.id}
-                                className='current-slide-image' >
-                                <img
-                                    draggable={false}
-                                    src={slide.imgSource} 
-                                    alt={slide.alt} />
-                            </li>
-                        )
-                    }
-                </motion.ul>
-*/
     return (
         <div className='slideshow-container'>
             <div className='slide-container'>
@@ -212,10 +223,10 @@ function Slideshow(){
                             }}
                             onDragEnd={OnDragEnd}>
                         <motion.li
-                            className='slide'
-                            initial={{opacity: 0}}
-                            animate={{opacity: 1}}>
-                            <img 
+                            className='previous-slide'
+                            animate={previousSlideAnims}>
+                            <img
+                                ref={pSRef} 
                                 className='previous-img'
                                 src={previousSlide.imgSource}
                                 alt={previousSlide.alt}
@@ -232,9 +243,8 @@ function Slideshow(){
                                 draggable={false}/>
                         </motion.li>
                         <motion.li
-                            className='slide'
-                            initial={{opacity: 0}}
-                            animate={{opacity: 1}}>
+                            className='next-slide'
+                            animate={nextSlideAnims}>
                             <img 
                                 className='next-img'
                                 src={nextSlide.imgSource}
@@ -273,86 +283,3 @@ function Slideshow(){
 }
 
 export default Slideshow;
-
-/**
-                    <motion.ul 
-                        drag='x' 
-                        dragDirectionLock 
-                        dragElastic={0.3}
-                        dragConstraints = {{ left: -1, right: 1}}
-                        whileDrag={{
-                            cursor:'grabbing'
-                        }}
-                        onDragEnd={OnDragEnd}>
-                        <motion.li
-                            className='slide'
-                            initial={{opacity: 0}}
-                            animate={{opacity: 1}}>
-                            <img 
-                                className='previous-img'
-                                src={previousSlide.imgSource}
-                                alt={previousSlide.alt}
-                                draggable={false}
-                                onClick={() => PreviousSlide()}/>
-                        </motion.li>
-                        <motion.li
-                            className='main-slide'
-                            initial={{scale: 1}}
-                            animate={{scale: 1.3}}>
-                            <img 
-                                src={currentSlide.imgSource}
-                                alt={currentSlide.alt}
-                                draggable={false}/>
-                        </motion.li>
-                        <motion.li
-                            className='slide'
-                            initial={{opacity: 0}}
-                            animate={{opacity: 1}}>
-                            <img 
-                                className='next-img'
-                                src={nextSlide.imgSource}
-                                alt={nextSlide.alt}
-                                draggable={false}
-                                onClick={() => NextSlide()}/>
-                        </motion.li>
-                    </motion.ul> */
-
-/*
-<div className='slide-selector'>
-                    {
-                        slidesArray.map((slide) =>
-                            <svg 
-                                key={slide.id}
-                                className={slide.id === currentSlide.id ? 'svg-icon active' : 'svg-icon'} 
-                                viewBox="0 0 50 50" 
-                                xmlns="http://www.w3.org/2000/svg"
-                                onClick={() => ChangeSlide(slide.id)}>
-                                <circle cx="25" cy="25" r="20" />
-                            </svg>
-                        )
-                    }
-                </div>
-*/
-
-
-/*const animateLeft = {
-    x: -500,
-    opacity: 0
-}
-
-const animateRight = {
-    x: 500,
-    opacity: 0
-}
-
-const currentSlideImage = {
-    height: '100%',
-    width: '100%',
-    opacity: 1
-}
-
-const hiddenSlideImage = {
-    height: '1%',
-    width: '1%',
-    opacity: 1
-}*/

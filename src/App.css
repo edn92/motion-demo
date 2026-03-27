@@ -350,8 +350,12 @@
     cursor: pointer;
     /*flex-grow: 1;*/
   /*}*/
-  .slide {
-    z-index:0;
+  .previous-slide {
+    transform: translateX(50%);
+  }
+
+  .next-slide {
+    transform: translateX(-50%);
   }
 
   .main-slide {
@@ -361,13 +365,11 @@
   .previous-img {
     mask-image: linear-gradient(to left, black 0%, transparent 100%);
     position: relative;
-    transform: translateX(50%);
   }
 
   .next-img {
     mask-image: linear-gradient(to right, black 0%, transparent 100%);
     position: relative;
-    transform: translateX(-50%);
   }
 
   /*.other-slide-image {
