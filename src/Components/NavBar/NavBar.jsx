@@ -1,17 +1,34 @@
 import { motion } from 'motion/react';
 import { useState } from 'react';
-import { Link/*, useMatch, useResolvedPath*/ } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 function NavBar(){
-    const navBarItems = ['Home', /*'Story',*/ 'Characters', 'About'];
+    const navBarItems = ['Home', 'Characters', 'About'];
     const [activeTab, setActiveTab] = useState('Home');
+    const location = useLocation();
+    let timer;
+
+    function CheckTabUnderline(){
+        const currentPage = location.pathname.replaceAll('/', '');
+
+        timer = setTimeout(() => {
+            setActiveTab(prevActiveTab => currentPage);
+        }, 200) //.2 second delay before moving back to current active page
+    }
 
     return (
         <div className="navBar-div">
-            <ul className='tabsContainer'>
+            <motion.ul 
+                className='tabsContainer'
+                onHoverStart={() => clearTimeout(timer)}
+                onHoverEnd={() => CheckTabUnderline()}>
                 {
                     navBarItems.map((item, index) => (
-                            <motion.li key={index} className='tab'>
+                            <motion.li 
+                                key={index} 
+                                className='tab'
+                                whileTap={{scale:0.95}}
+                                whileHover={() => setActiveTab(item)}>
                                 <Link to={item} onClick={() => setActiveTab(item)}>
                                     {item}
                                 </Link>
@@ -31,38 +48,9 @@ function NavBar(){
                         )
                     )
                 }
-            </ul>
+            </motion.ul>
         </div>
     )
 }
 
 export default NavBar;
-/** */
-
-/*function NavBar(){
-    const navBarItems = ['Home', /*'Story', 'Characters', 'About'];
-    
-    return (
-        <div className="navBar-div">
-            {
-                navBarItems.map((item, index) => (
-                    <div key={index} className='navBar-item'>
-                        <CustomLink to={item}>
-                            {item}
-                        </CustomLink>
-                    </div>)
-                )
-            }
-        </div>
-    )
-}*/
-
-/*function CustomLink({to, children}){
-    let resolvedPath = useResolvedPath(to);
-    const isActive = useMatch({path: resolvedPath.pathname, end: true});
-    return(
-        <Link to={to} className={isActive ? 'active' : ''}>
-            {children}
-        </Link>
-    );
-} */

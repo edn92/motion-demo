@@ -1,8 +1,8 @@
-import YoutubeIcon from '../../assets/youtube_icon.svg?react'
-import DiscordIcon from '../../assets/discord_icon.svg?react'
-import FacebookIcon from '../../assets/facebook_icon.svg?react'
-import InstagramIcon from '../../assets/instagram_icon.svg?react'
-import WhatsappIcon from '../../assets/whatsapp_icon.svg?react'
+import YoutubeIcon from '../../assets/youtube_icon.svg?react';
+import DiscordIcon from '../../assets/discord_icon.svg?react';
+import FacebookIcon from '../../assets/facebook_icon.svg?react';
+import ReactIcon from '../../assets/react_icon.svg?react';
+import ViteIcon from '../../assets/vite_icon.svg?react';
 import { motion } from "motion/react";
 
 function SocialsBar(){
@@ -33,14 +33,14 @@ function SocialsBar(){
                 </motion.div>
                 <motion.div
                     whileHover={{scale: 1.2}}>
-                    <a href='https://instagram.com/' target="_blank" rel="noopner noreferrer">
-                        <InstagramIcon className='svg-icon' onClick={() => SocialClick('instagram')}/>
+                    <a href='https://react.dev/' target="_blank" rel="noopner noreferrer">
+                        <ReactIcon className='svg-icon' onClick={() => SocialClick('React')}/>
                     </a>
                 </motion.div>
                 <motion.div
                     whileHover={{scale: 1.2}}>
-                    <a href='https://whatsapp.com/' target="_blank" rel="noopner noreferrer">
-                        <WhatsappIcon className='svg-icon' onClick={() => SocialClick('whatsapp')}/>
+                    <a href='https://vite.dev/' target="_blank" rel="noopner noreferrer">
+                        <ViteIcon className='svg-icon' onClick={() => SocialClick('Vite')}/>
                     </a>
                 </motion.div>
             </div>

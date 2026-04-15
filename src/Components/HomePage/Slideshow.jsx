@@ -9,17 +9,6 @@ import ArrowIcon from '../../assets/arrow_icon.svg?react';
 
 function Slideshow(){
     const testLongString = 'Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.'
-    
-    /*const slides = [
-        { id: 1, caption: testLongString, imgSource: SlideImage1, alt: 'slideImageAlt1'},
-        { id: 2, caption: 'caption 2', imgSource: SlideImage2, alt: 'slideImageAlt2'},
-        { id: 3, caption: 'caption 3', imgSource: SlideImage3, alt: 'slideImageAlt3'},
-        { id: 4, caption: 'caption 4', imgSource: SlideImage4, alt: 'slideImageAlt4'},
-        { id: 5, caption: 'caption 5', imgSource: SlideImage5, alt: 'slideImageAlt5'},
-    ];*/
-
-    //clone slides with last and first
-    //const slidesArray = [slides[slides.length-1], ...slides, slides[0]];
 
     const slidesArray = [
         { id: 0, caption: testLongString, imgSource: SlideImage1, alt: 'slideImageAlt1'},
@@ -33,9 +22,6 @@ function Slideshow(){
     const [nextSlide, setNextSlide] = useState(slidesArray[1]);
     const [previousSlide, setPreviousSlide] = useState(slidesArray[slidesArray.length -1]);
 
-    //const direction = ['Right', 'Left']
-    const [changeDirection, setChangeDirection] = useState(true); //true right, left false
-
     const pSRef = useRef(null); //slide images are the same base width so only need one
     const [slideImageWidth, setSlideImageWidth] = useState(0); //used for animations
 
@@ -43,28 +29,10 @@ function Slideshow(){
     const previousSlideAnims = useAnimation();
     const nextSlideAnims = useAnimation();
 
-    /*useEffect(() => {
-        const interval = setInterval(() => {
-            NextSlide();
-        }, 10000);
-
-        return () => clearInterval(interval); 
-    }, [currentSlide]); */
-
     useEffect(() => { //get initial animation calc
         if (pSRef.current){
             setSlideImageWidth(prevSlideImageWidth => pSRef.current.getBoundingClientRect().width);
         }
-        /*if (mainRef.current){
-            const test1 = mainRef.current.getBoundingClientRect()
-            console.log('main ' + test1.x);
-            console.log('previous width ' + test1.width);
-        }
-        if (nextRef.current){
-            const test2 = nextRef.current.getBoundingClientRect()
-            console.log('next ' + test2.x);
-            console.log('previous width ' + test2.width);
-        }*/
     }, []);
 
     
@@ -73,7 +41,7 @@ function Slideshow(){
             setSlideImageWidth(prevSlideImageWidth => pSRef.current.getBoundingClientRect().width);
         }
 
-        //const debounceResize = debounce(UpdateImageWidth, 100);
+        //const debounceResize = debounce(UpdateImageWidth, 100) //write debounce function;
 
         window.addEventListener('resize', UpdateImageWidth)
         return () => window.removeEventListener('resize', UpdateImageWidth);
@@ -95,10 +63,7 @@ function Slideshow(){
         } else {
             setNextSlide(prevNextSlide => slidesArray[next + 1]);
         }
-        /*let next = currentSlide.id + 1;
-        if (next > slides.length) {
-            next = 1;  //set to first slide
-        }*/
+
         setCurrentSlide(prevCurrentSlide => slidesArray[next]);
 
         HandleAnimations(true);
@@ -129,31 +94,28 @@ function Slideshow(){
         HandleAnimations(false);
     }
     
-    function ChangeSlide(id){
-        //let d = direction[0]; //set to right initially, if its less, then going left
-        if (id < currentSlide.id){
-            setChangeDirection(prevChangeDirection => true);
-        } else {
-            setChangeDirection(prevChangeDirection => false);
+    function ChangeSlide(id){ //selector
+        if (id != currentSlide.id){ //prevents from triggering if slide selected is the current one
+            let next = id + 1;
+            let previous = id -1;
+            if (next >= slidesArray.length){
+                next = 0; //set to first in array
+            }
+
+            if (previous <= 0) {
+                previous = slidesArray.length - 1; //set to last in array
+            }
+
+            setNextSlide(prevNextSlide => slidesArray[next]);
+            setPreviousSlide(prevPreviousSlide => slidesArray[previous]);
+            setCurrentSlide(prevCurrentSlide => slidesArray[id]);
+
+            if (id < currentSlide.id){
+                HandleAnimations(false);
+            } else {
+                HandleAnimations(true);
+            }
         }
-        setCurrentSlide(prevCurrentSlide => slidesArray[id]);
-
-        let next = id + 1;
-        let previous = id -1;
-        if (next >= slidesArray.length){
-            next = 0; //set to first in array
-        }
-
-        if (previous <= 0) {
-            previous = slidesArray.length - 1; //set to last in array
-        }
-
-        setNextSlide(prevNextSlide => slidesArray[next]);
-        setPreviousSlide(prevPreviousSlide => slidesArray[previous]);
-        setCurrentSlide(prevCurrentSlide => slidesArray[id]);
-
-
-        HandleAnimations();
     }
 
     function OnDragEnd(event, info){
@@ -165,45 +127,43 @@ function Slideshow(){
         }
     }
 
+    //handles slide transitions
     function HandleAnimations(direction){
-        //console.log(slideImageWidth);
-
-        //let xMoveValue = 200;
         let mainScale = 1.1;
-        let xTranslateValue = (slideImageWidth/2); //current translate is 50% for non main slides
-        let transDuration = 5;
+        let xTranslateValue = slideImageWidth; //current translate is 50% for non main slides
+        let transDuration = 0.3;
 
         mainSlideAnims.set({ 
             scale: 1, 
-            x: direction ? xTranslateValue : -xTranslateValue,
+            x: direction ? xTranslateValue : -xTranslateValue,//  opacity: 1,
             zIndex: 0 });
         mainSlideAnims.start({
             scale: mainScale,
-            x: 0,
-            zIndex: 5,
+            x: 0,//  opacity: 1,
+            zIndex: 1,
             transition: {duration: transDuration}
         });
 
         nextSlideAnims.set({
             scale: direction ? 1 : mainScale,
-            x: direction ? xTranslateValue : -xTranslateValue,
-            zIndex: direction ? 4 : 0
+            x: direction ? xTranslateValue : (-1 * xTranslateValue),//  opacity: 1,
+            zIndex: direction ? 1 : 0
         })
         nextSlideAnims.start({
             scale: 1,
-            x: 0,
+            x: (-xTranslateValue/2),//  opacity: 1,
             zIndex: 0,
             transition: {duration: transDuration}
         })
 
         previousSlideAnims.set({ 
             scale: direction ? mainScale : 1,
-            x: direction ? xTranslateValue : -xTranslateValue,
-            zIndex: direction ? 0 : 4
+            x: direction ? (1 * xTranslateValue) : -xTranslateValue,//  opacity: 1,
+            zIndex: direction ? 0 : 1
         })
         previousSlideAnims.start({
             scale: 1,
-            x: 0,
+            x: (xTranslateValue/2),//  opacity: 1,
             zIndex: 0,
             transition: {duration: transDuration}
         })
@@ -211,7 +171,6 @@ function Slideshow(){
 
     return (
         <div className='slideshow-container'>
-            <div className='slide-container'>
                 <div className='slide-images-container'>
                     <motion.ul
                             drag='x' 
@@ -253,31 +212,29 @@ function Slideshow(){
                                 onClick={() => NextSlide()}/>
                         </motion.li>
                     </motion.ul>
-                    
-                <div className='slides-selector-container'>
-                    <button>
-                        <ArrowIcon className='svg-icon flip-icon thumbnail-buttons' onClick={() => PreviousSlide()}/>  
-                    </button>
-                    {
-                        slidesArray.map((slide) =>
-                            <svg 
-                                key={slide.id}
-                                className={slide.id === currentSlide.id ? 'svg-icon active' : 'svg-icon'}
-                                viewBox='0 0 50 50'
-                                onClick={() => ChangeSlide(slide.id)}>
-                                <circle cx='25' cy='25' r='20'/>
-                            </svg>
-                        )
-                    }
-                    <button>
-                        <ArrowIcon className='svg-icon thumbnail-buttons' onClick={() => NextSlide()}/>
-                    </button>
                 </div>
-                </div>
-            </div>     
-            <div className='caption-div'>
-                {currentSlide.caption}
-            </div>
+                    <div className='slides-selector-container'>
+                        <button>
+                            <ArrowIcon className='svg-icon flip-icon thumbnail-buttons' onClick={() => PreviousSlide()}/>  
+                        </button>
+                        {
+                            slidesArray.map((slide) =>
+                                <svg 
+                                    key={slide.id}
+                                    className={slide.id === currentSlide.id ? 'svg-icon active' : 'svg-icon'}
+                                    viewBox='0 0 50 50'
+                                    onClick={() => ChangeSlide(slide.id)}>
+                                    <circle cx='24' cy='24' r='20'/>
+                                </svg>
+                            )
+                        }
+                        <button>
+                            <ArrowIcon className='svg-icon thumbnail-buttons' onClick={() => NextSlide()}/>
+                        </button>
+                    </div>
+                    <div className='caption-container'>
+                        {currentSlide.caption}
+                    </div>
         </div>
     );
 }

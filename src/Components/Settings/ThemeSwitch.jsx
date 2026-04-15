@@ -3,10 +3,11 @@ import { useState } from "react";
 import LightModeIcon from '../../assets/light_mode_icon.svg?react';
 import DarkModeIcon from '../../assets/dark_mode_icon.svg?react';
 
-function ThemeSwitch(){
-    const [isDark, setIsDark] = useState(true);
+function ThemeSwitch(props){
+    //const [isDark, setIsDark] = useState(props.theme);
+    const isDark = props.theme;
 
-    function handleSwitch(){
+    /*function handleSwitch(){
         const dark = !isDark;
         setIsDark(prevIsDark => dark);
         if (dark) {
@@ -14,7 +15,7 @@ function ThemeSwitch(){
         } else {
             document.querySelector('body').setAttribute('data-theme', 'light');
         }
-    }
+    }*/
 
     return (
         <div className="theme-switch-container">
@@ -23,16 +24,13 @@ function ThemeSwitch(){
                 style={{
                     justifyContent: "flex-" + (isDark ? "end" : "start"),
                 }}
-                onClick={handleSwitch}
+                onClick={props.onClick}
             >
                 <motion.div
                     className="toggle-handle"
-                    //style={handle}
                     layout
                     transition={{
-                        type: "spring",
-                        visualDuration: 0.2,
-                        bounce: 0.2,
+                        visualDuration: 0.5
                     }}>
                     { isDark ? 
                         <DarkModeIcon className='svg-icon' style={iconStyle}/> : 
@@ -48,22 +46,5 @@ const iconStyle = {
     width: 24,
     height: 24
 }
-
-/*
-
-                    /*width: 120,
-                    height: 60,
-                    backgroundColor: "rgba(66, 153, 225, 0.2)",
-                    borderRadius: 50,
-                    cursor: "pointer",
-                    display: "flex",
-                    padding: 10,
-
-const handle = {
-    width: 50,
-    height: 50,
-    backgroundColor: "#9911ff",
-    borderRadius: "50%",
-}*/
 
 export default ThemeSwitch;

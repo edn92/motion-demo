@@ -1,10 +1,10 @@
 import SocialsBar from "../Socials/SocialsBar";
-import ThemeSwitch from "./ThemeSwitch";
+
 function Footer(){
     return (
         <div className="footer-container">
-            <ThemeSwitch />
-            <div className='footer-middle'>test</div>
+            <div className='footer-left' />
+            <div className='footer-middle'>Demo website footer</div>
             <SocialsBar />
         </div>
     );

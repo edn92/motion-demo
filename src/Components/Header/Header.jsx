@@ -1,24 +1,15 @@
-import SocialsBar from "../Socials/SocialsBar";
+import HeaderLogo from "./HeaderLogo";
 import NavBar from "../NavBar/NavBar";
+import Settings from "../Settings/SettingsMenu";
 
 function Header(){
     return (
         <div className="header-container">
+            <HeaderLogo />
             <NavBar />
+            <Settings />
         </div>
     );
 }
 
 export default Header;
-
-/**
- * <div className="header">
-            <div className='header-left-side'></div>
-            <div className="header-title">
-                <h1>Header</h1>
-            </div>
-            <div className="header-socials-container">
-                <SocialsBar />
-            </div>
-        </div>
- */
