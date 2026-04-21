@@ -1,5 +1,6 @@
 {
   "name": "motion-demo",
+  "homepage": "https://edn92.github.io/motion-demo/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
