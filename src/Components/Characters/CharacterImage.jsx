@@ -6,7 +6,10 @@ function CharacterImage(props){
         <div className="character-image-container" >
             <motion.img 
                 src={backgroundImage}
-                animate={{rotate: 360, opacity: [0.2, 0.6, 0.2]}}
+                animate={{
+                    rotate: 360, 
+                    opacity: [0.2, 0.6, 0.2]}
+                }
                 transition={{
                     rotate: {duration: 120, repeat: Infinity, ease: 'linear'},
                     opacity: {duration: 5, repeat: Infinity, ease: 'linear'}
