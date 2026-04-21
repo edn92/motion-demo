@@ -1,4 +1,4 @@
-import { useRef, useEffect, useLayoutEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { motion, useAnimation } from 'motion/react';
 import SlideImage1 from '../../assets/splash_art.png';
 import SlideImage2 from '../../assets/splash_art1.png';
@@ -6,16 +6,17 @@ import SlideImage3 from '../../assets/splash_art2.png';
 import SlideImage4 from '../../assets/splash_art3.png';
 import SlideImage5 from '../../assets/splash_art4.png';
 import ArrowIcon from '../../assets/arrow_icon.svg?react';
+import LoadingDisplay from '../Loading/LoadingDisplay';
 
 function Slideshow(){
     const testLongString = 'Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.'
 
     const slidesArray = [
-        { id: 0, caption: testLongString, imgSource: SlideImage1, alt: 'slideImageAlt1'},
-        { id: 1, caption: 'caption 2', imgSource: SlideImage2, alt: 'slideImageAlt2'},
-        { id: 2, caption: 'caption 3', imgSource: SlideImage3, alt: 'slideImageAlt3'},
-        { id: 3, caption: 'caption 4', imgSource: SlideImage4, alt: 'slideImageAlt4'},
-        { id: 4, caption: 'caption 5', imgSource: SlideImage5, alt: 'slideImageAlt5'},
+        { id: 0, caption: 'Drag to swap images or use the buttons!', imgSource: SlideImage1, alt: 'slideImageAlt1'},
+        { id: 1, caption: 'Caption 2', imgSource: SlideImage2, alt: 'slideImageAlt2'},
+        { id: 2, caption: 'Caption 3', imgSource: SlideImage3, alt: 'slideImageAlt3'},
+        { id: 3, caption: 'Caption 4', imgSource: SlideImage4, alt: 'slideImageAlt4'},
+        { id: 4, caption: 'Caption 5', imgSource: SlideImage5, alt: 'slideImageAlt5'},
     ];
 
     const [currentSlide, setCurrentSlide] = useState(slidesArray[0]);
@@ -28,6 +29,17 @@ function Slideshow(){
     const mainSlideAnims = useAnimation();
     const previousSlideAnims = useAnimation();
     const nextSlideAnims = useAnimation();
+
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {//simulate loading
+        const delay = Math.floor((Math.random() * 1000) + 100); //random number between 100 and 1100
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, delay);
+
+        return () => clearTimeout(timer);
+    }, []);
 
     useEffect(() => { //get initial animation calc
         if (pSRef.current){
@@ -171,70 +183,76 @@ function Slideshow(){
 
     return (
         <div className='slideshow-container'>
-                <div className='slide-images-container'>
-                    <motion.ul
-                            drag='x' 
-                            dragDirectionLock 
-                            dragElastic={0.1}
-                            dragConstraints = {{ left: -1, right: 1}}
-                            whileDrag={{
-                                cursor:'grabbing'
-                            }}
-                            onDragEnd={OnDragEnd}>
-                        <motion.li
-                            className='previous-slide'
-                            animate={previousSlideAnims}>
-                            <img
-                                ref={pSRef} 
-                                className='previous-img'
-                                src={previousSlide.imgSource}
-                                alt={previousSlide.alt}
-                                draggable={false}
-                                onClick={() => PreviousSlide()}/>
-                        </motion.li>
-                        <motion.li
-                            className='main-slide'
-                            initial={{scale: 1.1}}
-                            animate={mainSlideAnims}>
-                            <img 
-                                src={currentSlide.imgSource}
-                                alt={currentSlide.alt}
-                                draggable={false}/>
-                        </motion.li>
-                        <motion.li
-                            className='next-slide'
-                            animate={nextSlideAnims}>
-                            <img 
-                                className='next-img'
-                                src={nextSlide.imgSource}
-                                alt={nextSlide.alt}
-                                draggable={false}
-                                onClick={() => NextSlide()}/>
-                        </motion.li>
-                    </motion.ul>
-                </div>
-                    <div className='slides-selector-container'>
-                        <button>
-                            <ArrowIcon className='svg-icon flip-icon thumbnail-buttons' onClick={() => PreviousSlide()}/>  
-                        </button>
-                        {
-                            slidesArray.map((slide) =>
-                                <svg 
-                                    key={slide.id}
-                                    className={slide.id === currentSlide.id ? 'svg-icon active' : 'svg-icon'}
-                                    viewBox='0 0 50 50'
-                                    onClick={() => ChangeSlide(slide.id)}>
-                                    <circle cx='24' cy='24' r='20'/>
-                                </svg>
-                            )
-                        }
-                        <button>
-                            <ArrowIcon className='svg-icon thumbnail-buttons' onClick={() => NextSlide()}/>
-                        </button>
-                    </div>
-                    <div className='caption-container'>
-                        {currentSlide.caption}
-                    </div>
+            {
+                isLoading ? 
+                    <LoadingDisplay message='Simulating loading...' /> :
+                    <>
+                        <div className='slide-images-container'>
+                            <motion.ul
+                                    drag='x' 
+                                    dragDirectionLock 
+                                    dragElastic={0.1}
+                                    dragConstraints = {{ left: -1, right: 1}}
+                                    whileDrag={{
+                                        cursor:'grabbing'
+                                    }}
+                                    onDragEnd={OnDragEnd}>
+                                <motion.li
+                                    className='previous-slide'
+                                    animate={previousSlideAnims}>
+                                    <img
+                                        ref={pSRef} 
+                                        className='previous-img'
+                                        src={previousSlide.imgSource}
+                                        alt={previousSlide.alt}
+                                        draggable={false}
+                                        onClick={() => PreviousSlide()}/>
+                                </motion.li>
+                                <motion.li
+                                    className='main-slide'
+                                    initial={{scale: 1.1}}
+                                    animate={mainSlideAnims}>
+                                    <img 
+                                        src={currentSlide.imgSource}
+                                        alt={currentSlide.alt}
+                                        draggable={false}/>
+                                </motion.li>
+                                <motion.li
+                                    className='next-slide'
+                                    animate={nextSlideAnims}>
+                                    <img 
+                                        className='next-img'
+                                        src={nextSlide.imgSource}
+                                        alt={nextSlide.alt}
+                                        draggable={false}
+                                        onClick={() => NextSlide()}/>
+                                </motion.li>
+                            </motion.ul>
+                        </div>
+                        <div className='slides-selector-container'>
+                            <button>
+                                <ArrowIcon className='svg-icon flip-icon thumbnail-buttons' onClick={() => PreviousSlide()}/>  
+                            </button>
+                            {
+                                slidesArray.map((slide) =>
+                                    <svg 
+                                        key={slide.id}
+                                        className={slide.id === currentSlide.id ? 'svg-icon active' : 'svg-icon'}
+                                        viewBox='0 0 50 50'
+                                        onClick={() => ChangeSlide(slide.id)}>
+                                        <circle cx='24' cy='24' r='20'/>
+                                    </svg>
+                                )
+                            }
+                            <button>
+                                <ArrowIcon className='svg-icon thumbnail-buttons' onClick={() => NextSlide()}/>
+                            </button>
+                        </div>
+                        <div className='caption-container'>
+                            {currentSlide.caption}
+                        </div>
+                    </>
+            }
         </div>
     );
 }

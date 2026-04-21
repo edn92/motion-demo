@@ -4,18 +4,7 @@ import LightModeIcon from '../../assets/light_mode_icon.svg?react';
 import DarkModeIcon from '../../assets/dark_mode_icon.svg?react';
 
 function ThemeSwitch(props){
-    //const [isDark, setIsDark] = useState(props.theme);
     const isDark = props.theme;
-
-    /*function handleSwitch(){
-        const dark = !isDark;
-        setIsDark(prevIsDark => dark);
-        if (dark) {
-            document.querySelector('body').setAttribute('data-theme', 'dark');
-        } else {
-            document.querySelector('body').setAttribute('data-theme', 'light');
-        }
-    }*/
 
     return (
         <div className="theme-switch-container">

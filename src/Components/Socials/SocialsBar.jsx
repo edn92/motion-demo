@@ -1,6 +1,5 @@
 import YoutubeIcon from '../../assets/youtube_icon.svg?react';
 import DiscordIcon from '../../assets/discord_icon.svg?react';
-import FacebookIcon from '../../assets/facebook_icon.svg?react';
 import ReactIcon from '../../assets/react_icon.svg?react';
 import ViteIcon from '../../assets/vite_icon.svg?react';
 import { motion } from "motion/react";
@@ -23,12 +22,6 @@ function SocialsBar(){
                     whileHover={{scale: 1.2}}>
                     <a href='https://discord.com/' target="_blank" rel="noopner noreferrer">
                         <DiscordIcon className='svg-icon' onClick={() => SocialClick('discord')}/>
-                    </a>
-                </motion.div>
-                <motion.div
-                    whileHover={{scale: 1.2}}>
-                    <a href='https://facebook.com/' target="_blank" rel="noopner noreferrer">
-                        <FacebookIcon className='svg-icon' onClick={() => SocialClick('facebook')}/>
                     </a>
                 </motion.div>
                 <motion.div
