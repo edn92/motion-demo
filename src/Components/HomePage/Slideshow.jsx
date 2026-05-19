@@ -34,7 +34,6 @@ function Slideshow(){
         const delay = Math.floor((Math.random() * 1000) + 100); //random number between 100 and 1100
         const timer = setTimeout(() => {
             setIsLoading(false);
-            console.log(pSRef.current.getBoundingClientRect());
         }, delay);
 
         return () => clearTimeout(timer); //cleanup timer
