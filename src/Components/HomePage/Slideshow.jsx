@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useLayoutEffect } from 'react';
 import { motion, useAnimation } from 'motion/react';
 import SlideImage1 from '../../assets/splash_art.png';
 import SlideImage2 from '../../assets/splash_art1.png';
@@ -9,8 +9,6 @@ import ArrowIcon from '../../assets/arrow_icon.svg?react';
 import LoadingDisplay from '../Loading/LoadingDisplay';
 
 function Slideshow(){
-    const testLongString = 'Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.'
-
     const slidesArray = [
         { id: 0, caption: 'Drag to swap images or use the buttons!', imgSource: SlideImage1, alt: 'slideImageAlt1'},
         { id: 1, caption: 'Caption 2', imgSource: SlideImage2, alt: 'slideImageAlt2'},
@@ -23,7 +21,7 @@ function Slideshow(){
     const [nextSlide, setNextSlide] = useState(slidesArray[1]);
     const [previousSlide, setPreviousSlide] = useState(slidesArray[slidesArray.length -1]);
 
-    const pSRef = useRef(null); //slide images are the same base width so only need one
+    const pSRef = useRef(null); //non-main slide images are the same base width so only need one
     const [slideImageWidth, setSlideImageWidth] = useState(0); //used for animations
 
     const mainSlideAnims = useAnimation();
@@ -36,24 +34,28 @@ function Slideshow(){
         const delay = Math.floor((Math.random() * 1000) + 100); //random number between 100 and 1100
         const timer = setTimeout(() => {
             setIsLoading(false);
+            console.log(pSRef.current.getBoundingClientRect());
         }, delay);
 
-        return () => clearTimeout(timer);
+        return () => clearTimeout(timer); //cleanup timer
     }, []);
 
     useEffect(() => { //get initial animation calc
-        if (pSRef.current){
-            setSlideImageWidth(prevSlideImageWidth => pSRef.current.getBoundingClientRect().width);
-        }
-    }, []);
+        if (!isLoading){ 
+            const timer = setTimeout(() => {
+                setSlideImageWidth(prevSlideImageWidth => pSRef.current.getBoundingClientRect().width);
+            }, 10); //small delay so the size loads properly
 
-    
+            return () => clearTimeout(timer);
+        }
+    }, [!isLoading]);
+
     useEffect(() => { //handle animation calc updates when resizing
         function UpdateImageWidth(){
             setSlideImageWidth(prevSlideImageWidth => pSRef.current.getBoundingClientRect().width);
         }
 
-        //const debounceResize = debounce(UpdateImageWidth, 100) //write debounce function;
+        //const debounceResize = debounce(UpdateImageWidth, 100) //write debounce function if required;
 
         window.addEventListener('resize', UpdateImageWidth)
         return () => window.removeEventListener('resize', UpdateImageWidth);
@@ -142,7 +144,7 @@ function Slideshow(){
     //handles slide transitions
     function HandleAnimations(direction){
         let mainScale = 1.1;
-        let xTranslateValue = slideImageWidth; //current translate is 50% for non main slides
+        let xTranslateValue = slideImageWidth/2; //current translate is 50% for non main slides
         let transDuration = 0.3;
 
         mainSlideAnims.set({ 
@@ -153,31 +155,31 @@ function Slideshow(){
             scale: mainScale,
             x: 0,//  opacity: 1,
             zIndex: 1,
-            transition: {duration: transDuration}
+            transition: {duration: transDuration, ease: 'easeInOut'}
         });
 
         nextSlideAnims.set({
             scale: direction ? 1 : mainScale,
-            x: direction ? xTranslateValue : (-1 * xTranslateValue),//  opacity: 1,
+            x: direction ? xTranslateValue : (-1 * xTranslateValue),//  opacity: 0,
             zIndex: direction ? 1 : 0
         })
         nextSlideAnims.start({
             scale: 1,
-            x: (-xTranslateValue/2),//  opacity: 1,
+            x: (-xTranslateValue/2),//  opacity: 0,
             zIndex: 0,
-            transition: {duration: transDuration}
+            transition: {duration: transDuration, ease: 'easeInOut'}
         })
 
         previousSlideAnims.set({ 
             scale: direction ? mainScale : 1,
-            x: direction ? (1 * xTranslateValue) : -xTranslateValue,//  opacity: 1,
+            x: direction ? (1 * xTranslateValue) : -xTranslateValue,//  opacity: 0,
             zIndex: direction ? 0 : 1
         })
         previousSlideAnims.start({
             scale: 1,
-            x: (xTranslateValue/2),//  opacity: 1,
+            x: (xTranslateValue/2),//  opacity: 0,
             zIndex: 0,
-            transition: {duration: transDuration}
+            transition: {duration: transDuration, ease: 'easeInOut'}
         })
     }
 
@@ -201,7 +203,7 @@ function Slideshow(){
                                     className='previous-slide'
                                     animate={previousSlideAnims}>
                                     <img
-                                        ref={pSRef} 
+                                        ref={pSRef}  
                                         className='previous-img'
                                         src={previousSlide.imgSource}
                                         alt={previousSlide.alt}
@@ -212,7 +214,7 @@ function Slideshow(){
                                     className='main-slide'
                                     initial={{scale: 1.1}}
                                     animate={mainSlideAnims}>
-                                    <img 
+                                    <img
                                         src={currentSlide.imgSource}
                                         alt={currentSlide.alt}
                                         draggable={false}/>

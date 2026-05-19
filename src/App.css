@@ -481,14 +481,15 @@
 
 /*t l b r*/
 .character-name-div {
-  padding: 2% 2% 0% 2%;
+  text-align: center;
+  padding: 1%;
   font-size: 2em;
 }
 
 .scrollable-div {
   overflow: auto;
   overflow-wrap: break-word;
-  padding: 0px 2% 2% 2%;
+  padding: 1%;
   max-height: 65vh;
   flex-grow: 1;
 }
