@@ -2,7 +2,7 @@ import './App.css'
 import Header from './Components/Header/Header';
 import Footer from './Components/Footer/Footer';
 
-import {Routes, Route} from 'react-router-dom';
+import {Routes, Route, BrowserRouter} from 'react-router-dom';
 import About from './Components/About/About';
 import HomePage from './Components/HomePage/HomePage';
 import CharactersPage from './Components/Characters/CharactersPage';
